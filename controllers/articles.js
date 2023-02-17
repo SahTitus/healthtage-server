@@ -39,7 +39,7 @@ export const getArticlesByCategory = async (req, res) => {
   }
 };
 export const getArticlesBySearch = async (req, res) => {
-  const { searchQuery } = req.query;
+  const { searchTerm } = req.query;
 
   const default_limit = 10;
   const skip = req.query.skip ? Number(req.query.skip) : 0;
