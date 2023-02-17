@@ -32,7 +32,7 @@ export const getArticlesByCategory = async (req, res) => {
         },
       },
       { $sample: { size: 10 } },
-    ]).toArray();
+    ])
     res.status(200).json({ articles, totalCount });
   } catch (error) {
     return res.status(400).json({ message: error.message });
@@ -53,7 +53,7 @@ export const getArticlesBySearch = async (req, res) => {
       .skip(skip)
       .limit(default_limit)
       .sort({ title: 1 })
-      .toArray();
+      
 
     res.status(200).json({ articles, totalCount });
   } catch (error) {

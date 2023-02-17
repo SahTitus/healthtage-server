@@ -32,8 +32,7 @@ export const getTopicsBySearch = async (req, res) => {
       .skip(skip)
       .limit(15)
       .sort({ title: 1 })
-      .toArray();
-
+    
     res.status(200).json({ topics, totalCount });
   } catch (error) {
     return res.status(400).json({ message: error.message });
