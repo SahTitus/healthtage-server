@@ -1,17 +1,23 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import isEmail from "validator/lib/isEmail.js";
 import User from "../model/user.js";
+import normalizeEmail from "validator/lib/normalizeEmail.js";
 
-const secret = "test";
+const secret =
+  "1**2v****hft26525w5d2sswxkbXX`Y8******771@425525DS8GCGGGSHV****a12e2e78e22e";
 
-export const getUsers = async (req, res) => {
-  const users = await User.find();
-  if (!users) {
-    return res.status(204).json({ message: "No user found" });
+const verifyEmail = (userEmail) => {
+  userEmail = normalizeEmail(userEmail);
+
+  if (!isEmail(userEmail)) {
+    res
+      .status(400)
+      .json({ error: { message: "The email you entered is invalid." } });
+    // return;
   }
-  res.json(users);
 };
+
 export const getUser = async (req, res) => {
   const { id } = req.params;
 
@@ -26,16 +32,23 @@ export const getUser = async (req, res) => {
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
+  verifyEmail(email);
+
   try {
     const existingUser = await User.findOne({ email });
+
+    if (!existingUser ) {
+      return res.status(404).json({ message: "Invalid credentials" });
+    }
 
     const isPasswordCorrect = await bcrypt.compare(
       password,
       existingUser.password
     );
 
-    if (!existingUser || !isPasswordCorrect)
-    return res.status(404).json({ message: "Invalid credentials", type: 'msg' });
+    if ( !isPasswordCorrect) {
+      return res.status(404).json({ message: "Invalid credentials" });
+    }
 
     const token = jwt.sign(
       { email: existingUser.email, id: existingUser._id },
@@ -43,52 +56,55 @@ export const signin = async (req, res) => {
       { expiresIn: "1000h" }
     );
 
+
+    // return no password
+    existingUser.password = undefined;
+
     res.status(200).json({ result: existingUser, token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong.", });
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong." });
   }
 };
 
 export const signup = async (req, res) => {
-  const { email, firstName, image, lastName, password, confirmPassword } =
-    req.body;
+  const { email, name, password } = req.body;
+
+  verifyEmail(email);
 
   try {
     const existingUser = await User.findOne({ email });
-    const passwordExist = await User.findOne({ password });
+    const existingPassword = await User.findOne({ password });
 
-    if (existingUser)
-      return res.status(400).json({ message: "User already exists", type: 'msg' });
-
-    if (passwordExist)
-      return res.status(400).json({ message: "Password already exists", type: 'msg' });
-
-    if (password !== confirmPassword)
-      return res.status(400).json({ message: "Password doesn't match", type: 'msg' });
+    if (existingUser || existingPassword) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const result = await User.create({
       email,
-      mentorshipDp: null,
-      image: image,
-      mentorshipName: "",
       password: hashedPassword,
-      name: `${firstName} ${lastName}`,
+      name,
+      isGoogle: false,
     });
+
+    result.password = null;
 
     const token = jwt.sign({ email: result.email, id: result._id }, secret, {
       expiresIn: "1000h",
     });
 
+    result.password = undefined;
+
     res.status(200).json({ result, token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong." });
+    res.status(500).json({ error });
   }
 };
 
 export const googleAuth = async (req, res) => {
-  const { email, photoURL, displayName } = req.body;
+  const { email, photo, name } = req.body;
 
   try {
     const userExist = await User.findOne({ email });
@@ -103,44 +119,22 @@ export const googleAuth = async (req, res) => {
     } else {
       const result = await User.create({
         email: email,
-        mentorshipDp: null,
-        image: photoURL,
-        mentorshipName: "",
+        photo: photo,
         password: "1321334578222",
-        name: displayName,
-        department: "",
-        age: "",
-        religion: "",
-        program: "",
-        rationale: "",
-
+        name: name,
+        isGoogle: true,
       });
 
       const token = jwt.sign({ email: result.email, id: result._id }, secret, {
         expiresIn: "1000h",
       });
 
+      result.password = undefined;
+
       res.status(200).json({ result, token });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Something went wrong." });
   }
-};
-
-export const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const user = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(id))
-    return res.status(400).send({ message: `User ID ${id} not found` });
-
-  const token = jwt.sign({ email: user.email, id: user._id }, secret, {
-    expiresIn: "1h",
-  });
-
-  const result = await User.findByIdAndUpdate(id, user, { new: true }).sort({
-    updatedAt: -1,
-  });
-
-  res.json({ result, token });
 };

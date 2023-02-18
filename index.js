@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import credentials from "./middleware/credentials.js";
 import articlesRoutes from "./routes/articles.js";
 import topicsRoutes from "./routes/topics.js";
-// import userRoutes from "./routes/users.js";
+import userRoutes from "./routes/users.js";
 
 const app = express();
 dotenv.config();
@@ -23,13 +23,11 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
 
-
-
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use("/articles", articlesRoutes);
-// app.use("/user", userRoutes);
+app.use("/users", userRoutes);
 app.use("/topics", topicsRoutes);
 
 mongoose.connection.once("open", () => {
