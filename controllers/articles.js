@@ -1,8 +1,4 @@
 import Article from "../model/article.js";
-import User from "../model/user.js";
-import mongoose from "mongoose";
-
-// getArticle
 
 export const getArticles = async (req, res) => {
   const totalCount = await Article.countDocuments({});
@@ -53,7 +49,7 @@ export const getArticlesBySearch = async (req, res) => {
       .skip(skip)
       .limit(default_limit)
       .sort({ title: 1 })
-      
+
 
     res.status(200).json({ articles, totalCount });
   } catch (error) {
