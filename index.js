@@ -9,6 +9,7 @@ import credentials from "./middleware/credentials.js";
 import articlesRoutes from "./routes/articles.js";
 import topicsRoutes from "./routes/topics.js";
 import userRoutes from "./routes/users.js";
+import aiRoutes from "./routes/ai.js";
 
 const app = express();
 dotenv.config();
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use("/articles", articlesRoutes);
 app.use("/users", userRoutes);
+app.use("/ai", aiRoutes);
 app.use("/topics", topicsRoutes);
 
 mongoose.connection.once("open", () => {
