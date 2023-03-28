@@ -5,8 +5,9 @@ const rule = `NOTE! The actual query starts from 'MY QUERY IS'.
 If the rest of the questions is not within biology or health scope then, response to me that the question is out of scope and you're trained to answer questions or topics related to biology and health only. `
 
 export const ai = async (req, res) => {
+    const api = process.env.OPENAI_API_KEY
     const configuration = new Configuration({
-        apiKey: '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',
+        apiKey: api || process.env.OPENAI_API_KEY
     });
 
     const openai = new OpenAIApi(configuration);
@@ -19,7 +20,7 @@ export const ai = async (req, res) => {
         2.don't answer questions that are outside health and biology scope!
         3. you CAN response to greetings if you are been greeted and then ask how you may help them! `;
 
-        // await AiQuery.create({ query: query });
+        await AiQuery.create({ query: query });
         const response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: `${prompt}`,
