@@ -33,7 +33,7 @@ export const ai = async (req, res) => {
 
         res.status(200).json({
             bot: response.data.choices[0].text,
-            prompt: prompt,
+            prompt: query,
         });
 
     } catch (error) {
