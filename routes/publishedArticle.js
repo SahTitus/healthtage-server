@@ -1,7 +1,7 @@
 import express from "express";
 import {
  publishArticle
-} from "../controllers/publishedArticle";
+} from "../controllers/publishedArticle.js";
 
 const router = express.Router();
 
