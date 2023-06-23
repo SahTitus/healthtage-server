@@ -35,7 +35,7 @@ export const publishArticle = async (req, res) => {
             publishedAt: new Date().toISOString(),
         });
 
-        res.status(201).json(result);
+        res.status(200).json({result, status: '200'});
     } catch (err) {
         console.error(err);
     }
