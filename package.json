@@ -20,6 +20,7 @@
     "mongoose": "^6.5.3",
     "nodemon": "^2.0.19",
     "openai": "^3.2.1",
+    "striptags": "^3.2.0",
     "validator": "^13.9.0"
   }
 }

@@ -13,5 +13,9 @@ const userSchema = mongoose.Schema({
     type: String,
   },
   emailVerified: Boolean,
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
 });
 export default mongoose.model("User", userSchema);
