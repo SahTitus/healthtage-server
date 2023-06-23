@@ -10,7 +10,7 @@ import articlesRoutes from "./routes/articles.js";
 import topicsRoutes from "./routes/topics.js";
 import userRoutes from "./routes/users.js";
 import aiRoutes from "./routes/ai.js";
-import publishArticleRoutes from "./routes/publishArticle.js";
+import publishArticleRoutes from "./routes/publishedArticle.js";
 
 const app = express();
 dotenv.config();
