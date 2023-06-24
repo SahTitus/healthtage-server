@@ -54,16 +54,22 @@
 // });
 
 
-
-
-
 import Article from "../model/article.js";
+import PublishedArticle from "../model/publishedArticle.js";
+
 
 export const getArticles = async (req, res) => {
   const totalCount = await Article.countDocuments({});
-  const articles = await Article.aggregate([{ $sample: { size: 10 } }]);
+  const publishedCount = await PublishedArticle.countDocuments({});
 
-  res.status(200).json({ articles, totalCount });
+  const articles1 = await PublishedArticle.find({}).limit(10).lean();
+  const articles2 = await Article.aggregate([{ $sample: { size: 6 } }]);
+
+
+  const articles = [...articles1, ...articles2];
+
+
+  res.status(200).json({ articles, totalCount, publishedCount });
 
   if (!articles) {
     return res.status(204).json({ message: "No articles found" });
@@ -80,7 +86,11 @@ export const getArticlesByCategory = async (req, res) => {
       category_id: category_id,
     });
 
-    const articles = await Article.aggregate([
+    const publishedCount = await PublishedArticle.countDocuments({
+      category_id: category_id,
+    });
+
+    const articles1 = await Article.aggregate([
       {
         $match: {
           category_id: category_id,
@@ -88,7 +98,18 @@ export const getArticlesByCategory = async (req, res) => {
       },
       { $sample: { size: 10 } },
     ])
-    res.status(200).json({ articles, totalCount });
+    const articles2 = await PublishedArticle.aggregate([
+      {
+        $match: {
+          category_id: category_id,
+        },
+      },
+      { $sample: { size: 10 } },
+    ])
+
+    const articles = [...articles2, ...articles1]
+
+    res.status(200).json({ articles, totalCount, publishedCount });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -103,14 +124,19 @@ export const getArticlesBySearch = async (req, res) => {
     const title = new RegExp(searchTerm, "i");
 
     const totalCount = await Article.countDocuments({ title: title });
+    const publishedCount = await PublishedArticle.countDocuments({ title: title });
 
-    const articles = await Article.find({ title: title })
+    const articles1 = await Article.find({ title: title })
+      .skip(skip)
+      .limit(default_limit)
+      .sort({ title: 1 })
+    const articles2 = await PublishedArticle.find({ title: title })
       .skip(skip)
       .limit(default_limit)
       .sort({ title: 1 })
 
-
-    res.status(200).json({ articles, totalCount });
+    const articles = [...articles2, ...articles1]
+    res.status(200).json({ articles, totalCount, publishedCount });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }

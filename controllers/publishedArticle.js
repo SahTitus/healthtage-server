@@ -1,12 +1,27 @@
 import striptags from "striptags";
-import publishedArticle from "../model/publishedArticle.js";
+import PublishedArticle from "../model/publishedArticle.js";
+import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
+
+
+export const getArticles = async (req, res) => {
+    const totalCount = await PublishedArticle.countDocuments({});
+    const articles = await PublishedArticle.aggregate([{ $sample: { size: 10 } }]);
+
+    res.status(200).json({ articles, totalCount });
+
+    if (!articles) {
+        return res.status(204).json({ message: "No articles found" });
+    }
+};
+
+
 
 export const publishArticle = async (req, res) => {
     const article = req.body;
 
     try {
-        // if (!mongoose.Types.ObjectId.isValid(article.id))
-        //     return res.status(400).send({ message: `User ID ${id} not found` });
+
 
         const strippedText = striptags(article.content);
         const wordsPerMinute = 200; // Adjust the words per minute
@@ -27,7 +42,7 @@ export const publishArticle = async (req, res) => {
         }
 
 
-        const result = await publishedArticle.create({
+        const result = await PublishedArticle.create({
             ...article,
             author: 'Sah Titus Samuel',
             healthtage: true,
@@ -35,8 +50,29 @@ export const publishArticle = async (req, res) => {
             publishedAt: new Date().toISOString(),
         });
 
-        res.status(200).json({result, status: '200'});
+        res.status(200).json({ result, status: '200' });
     } catch (err) {
         console.error(err);
     }
+};
+
+
+export const getArticle = async (req, res) => {
+    console.log(req.params)
+    const articleId = req?.params?.id;
+    if (!articleId) {
+        return res.status(400).json({ message: "Article ID is required." });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        return res.status(400).send({ message: ` ID ${articleId} not found` });
+    }
+    const article = await PublishedArticle.findOne({ id: new ObjectId(articleId) })
+
+    if (!article) {
+        return res
+            .status(400)
+            .json({ message: `Article ID ${articleId} not found` });
+    }
+    res.json(article);
 };

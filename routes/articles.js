@@ -3,7 +3,7 @@ import {
   getArticles,
   getArticlesByCategory,
   getArticlesBySearch,
-  getArticle
+  getArticle,
 } from "../controllers/articles.js";
 // import auth from "../middleware/auth.js";
 
