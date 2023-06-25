@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const articleSchema = mongoose.Schema({
-  _id: String,
+  id: String,
   tags: Array,
   slug: String,
   title: String,

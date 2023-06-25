@@ -57,8 +57,9 @@ export const publishArticle = async (req, res) => {
 
 
 export const getArticle = async (req, res) => {
-    console.log(req.params)
     const articleId = req?.params?.id;
+
+    const objectId = mongoose.Types.ObjectId(articleId);
     if (!articleId) {
         return res.status(400).json({ message: "Article ID is required." });
     }
@@ -66,12 +67,12 @@ export const getArticle = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(articleId)) {
         return res.status(400).send({ message: ` ID ${articleId} not found` });
     }
-    const article = await PublishedArticle.findOne({ id: articleId })
+    try {
+        const article = await PublishedArticle.findById(objectId)
+        res.json(article);
 
-    if (!article) {
-        return res
-            .status(400)
-            .json({ message: `Article ID ${articleId} not found` });
+    } catch (error) {
+        res.status(400).json({ message: `Article ID ${articleId} not found` });
     }
-    res.json(article);
-};
+}
+
