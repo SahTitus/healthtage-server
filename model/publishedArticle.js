@@ -4,7 +4,6 @@ const articleSchema = mongoose.Schema({
   _id: String,
   tags: Array,
   slug: String,
-  link: String,
   title: String,
   image: String,
   author: String,
@@ -16,6 +15,10 @@ const articleSchema = mongoose.Schema({
   healthtage: Boolean,
   category_id: String,
   reading_time: String,
+  saves: {
+    type: [String],
+    default: [],
+  },
   publishedAt: {
     type: Date,
     default: new Date(),

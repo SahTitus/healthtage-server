@@ -59,17 +59,21 @@ import PublishedArticle from "../model/publishedArticle.js";
 
 
 export const getArticles = async (req, res) => {
+  const { skip } = req.query;
   const totalCount = await Article.countDocuments({});
-  const publishedCount = await PublishedArticle.countDocuments({});
+  const total_pubCount = await PublishedArticle.countDocuments({});
 
-  const articles1 = await PublishedArticle.find({}).limit(10).lean();
+  const skipCount = skip || 0;
+
+  let articles1 = [];
+  if (total_pubCount > skipCount) {
+    articles1 = await PublishedArticle.find({}).sort({ _id: -1 }).skip(skipCount).limit(10).lean();
+  }
+
+
   const articles2 = await Article.aggregate([{ $sample: { size: 6 } }]);
-
-
   const articles = [...articles1, ...articles2];
-
-
-  res.status(200).json({ articles, totalCount, publishedCount });
+  res.status(200).json({ articles, totalCount, total_pubCount, noPubFetched: articles1.length });
 
   if (!articles) {
     return res.status(204).json({ message: "No articles found" });
@@ -86,7 +90,7 @@ export const getArticlesByCategory = async (req, res) => {
       category_id: category_id,
     });
 
-    const publishedCount = await PublishedArticle.countDocuments({
+    const total_pubCount = await PublishedArticle.countDocuments({
       category_id: category_id,
     });
 
@@ -109,7 +113,7 @@ export const getArticlesByCategory = async (req, res) => {
 
     const articles = [...articles2, ...articles1]
 
-    res.status(200).json({ articles, totalCount, publishedCount });
+    res.status(200).json({ articles, totalCount, total_pubCount, noPubFetched: articles2.length });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -124,7 +128,7 @@ export const getArticlesBySearch = async (req, res) => {
     const title = new RegExp(searchTerm, "i");
 
     const totalCount = await Article.countDocuments({ title: title });
-    const publishedCount = await PublishedArticle.countDocuments({ title: title });
+    const total_pubCount = await PublishedArticle.countDocuments({ title: title });
 
     const articles1 = await Article.find({ title: title })
       .skip(skip)
@@ -136,7 +140,7 @@ export const getArticlesBySearch = async (req, res) => {
       .sort({ title: 1 })
 
     const articles = [...articles2, ...articles1]
-    res.status(200).json({ articles, totalCount, publishedCount });
+    res.status(200).json({ articles, totalCount, total_pubCount, noPubFetched: articles2.length });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
