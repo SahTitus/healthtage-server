@@ -1,7 +1,6 @@
 import striptags from "striptags";
 import PublishedArticle from "../model/publishedArticle.js";
 import mongoose from "mongoose";
-import { ObjectId } from "mongodb";
 
 
 export const getArticles = async (req, res) => {
@@ -67,7 +66,7 @@ export const getArticle = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(articleId)) {
         return res.status(400).send({ message: ` ID ${articleId} not found` });
     }
-    const article = await PublishedArticle.findOne({ id: new ObjectId(articleId) })
+    const article = await PublishedArticle.findOne({ id: articleId })
 
     if (!article) {
         return res
