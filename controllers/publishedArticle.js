@@ -20,8 +20,6 @@ export const publishArticle = async (req, res) => {
     const article = req.body;
 
     try {
-
-
         const strippedText = striptags(article.content);
         const wordsPerMinute = 200; // Adjust the words per minute
 
@@ -40,11 +38,11 @@ export const publishArticle = async (req, res) => {
             return filteredWords?.length;
         }
 
-
         const result = await PublishedArticle.create({
             ...article,
             author: 'Sah Titus Samuel',
             healthtage: true,
+            sitemapGenerated: false,
             reading_time: readingTime,
             publishedAt: new Date().toISOString(),
         });
