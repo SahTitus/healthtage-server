@@ -42,8 +42,8 @@ export const publishArticle = async (req, res) => {
             ...article,
             author: 'Sah Titus Samuel',
             healthtage: true,
-            sitemapGenerated: false,
             reading_time: readingTime,
+            sitemapGenerated: false,
             publishedAt: new Date().toISOString(),
         });
 
