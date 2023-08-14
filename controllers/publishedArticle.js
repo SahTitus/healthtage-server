@@ -44,6 +44,7 @@ export const publishArticle = async (req, res) => {
             healthtage: true,
             reading_time: readingTime,
             publishedAt: new Date().toISOString(),
+            sitemapGenerated: false,
         });
 
         res.status(200).json({ result, status: '200' });

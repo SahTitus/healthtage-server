@@ -3,9 +3,9 @@ import AiQuery from '../model/aiQuery.js';
 
 const rule = `NOTE! The actual query starts from 'MY QUERY IS'. 
 If the rest of the questions is not within biology or health scope then, response to me that the question is out of scope and you're trained to answer questions or topics related to biology and health only. `
-const api = process.env.OPENAI_API_KEY
-export const ai = async (req, res) => {
 
+export const ai = async (req, res) => {
+    const api = process.env.OPENAI_API_KEY
     const configuration = new Configuration({
         apiKey: api || process.env.OPENAI_API_KEY
     });
