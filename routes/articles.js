@@ -5,7 +5,6 @@ import {
   getArticlesBySearch,
   getArticle,
 } from "../controllers/articles.js";
-// import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
