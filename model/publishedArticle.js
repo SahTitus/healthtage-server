@@ -15,6 +15,7 @@ const articleSchema = mongoose.Schema({
   healthtage: Boolean,
   category_id: String,
   reading_time: String,
+  sitemapGenerated: false,
   saves: {
     type: [String],
     default: [],

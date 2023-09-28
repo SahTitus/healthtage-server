@@ -14,8 +14,6 @@ export const getArticles = async (req, res) => {
     }
 };
 
-
-
 export const publishArticle = async (req, res) => {
     const article = req.body;
 
@@ -44,6 +42,7 @@ export const publishArticle = async (req, res) => {
             healthtage: true,
             reading_time: readingTime,
             publishedAt: new Date().toISOString(),
+            sitemapGenerated: false,
         });
 
         res.status(200).json({ result, status: '200' });
@@ -51,7 +50,6 @@ export const publishArticle = async (req, res) => {
         console.error(err);
     }
 };
-
 
 export const getArticle = async (req, res) => {
     const articleId = req?.params?.id;

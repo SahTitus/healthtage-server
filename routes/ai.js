@@ -7,6 +7,4 @@ const router = express.Router();
 
 router.route("/").post(ai);
 
-
-
 export default router;
